@@ -4,6 +4,10 @@
  */
 package restaurante;
 
+import com.sun.jdi.connect.spi.Connection;
+import java.util.Arrays;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author CAMARGO
@@ -46,10 +50,13 @@ public class cadastro extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(32767, 2147483647));
-        setPreferredSize(new java.awt.Dimension(327, 563));
 
         buttonCadastrar.setText("Cadastrar");
+        buttonCadastrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonCadastrarActionPerformed(evt);
+            }
+        });
 
         buttonEmail.setForeground(new java.awt.Color(102, 102, 102));
         buttonEmail.setText("Ex: email@example.com");
@@ -232,40 +239,46 @@ public class cadastro extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_buttonTelefoneActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+    private void buttonCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCadastrarActionPerformed
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+            Connection conn = conexao.faz_conexao();
+            
+            String sql = "insert into dados_senhas(nome, cpf, telefone, email, senha, confirmarSeha) value (?, ?, ?, ?, ?, ?)";
+            
+            PreparedStatement smt = conn.preparedStatement(sql);
+            
+            String nome = buttonNome.getText();
+            String cpf = buttonCPF.getText();
+            String telefone = buttonTelefone.getText();
+            String email = buttonEmail.getText();
+            char[] senha = buttonSenha.getPassword();
+            char[] confSenha = buttonConfirmeSenha.getPassword();
+            
+            if (Arrays.equals(senha, confSenha)){
+                smt.setString(1, nome);
+                smt.setString(2, cpf);
+                smt.setString(3, telefone);
+                smt.setString(4, email);
+                smt.setString(5, new String(senha));
+                
+                smt.executeUpdate();
+                
+                Arrays.fill(senha, ' ');
+                Arrays.fill(confSenha, ' ');
+                
+                smt.close();
+                
+                JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso!");
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(cadastro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(cadastro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(cadastro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(cadastro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            else {
+                JOptionPane.showMessageDialog(null, "Não foi possível concluir seu cadastro, tente novamente.");
+            }
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new cadastro().setVisible(true);
-            }
-        });
-    }
+        catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_buttonCadastrarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JFormattedTextField buttonCPF;
@@ -287,4 +300,28 @@ public class cadastro extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     // End of variables declaration//GEN-END:variables
+
+    private static class PreparedStatement {
+
+        public PreparedStatement() {
+        }
+
+        private void setString(int i, String nome) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        private void executeUpdate() {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        private void close() {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+    }
+
+    private static class SQL {
+
+        public SQL() {
+        }
+    }
 }
